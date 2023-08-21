@@ -8,6 +8,7 @@ class Wort:
         self.translation = translation
         self.art = art
 
+
     def __str__(self):
         if self.art:
             return f'{self.art} {self.word} - {self.translation}'
