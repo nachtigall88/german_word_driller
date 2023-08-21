@@ -1,4 +1,5 @@
 import sqlite3
+from random import choice
 
 class Wort:
     """клас для опису екземпяру для отримання та запису для зберігання даних"""
