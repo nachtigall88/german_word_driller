@@ -25,14 +25,28 @@ class Driller:
         self.__random_data = None
         self.make_data_base()
 
-    def __call__(self, *args, **kwargs):
-        pass
+    def __call__(self, data: Wort):
+        self.add_data(data)
 
     def __str__(self):
         self.show_random()
 
     def show_random(self):
         return self.__random_data
+
+
+    @staticmethod
+    def check_if_exists(data):
+        """метод перевіряє, чи є слово, що додається, в базі"""
+        flag = True
+        with sq.connect('word_data.db') as con:
+            cur = con.cursor()
+            cur.execute("""SELECT * FROM words""")
+            result = cur.fetchall()
+            for i in result:
+                if data in i:
+                    flag = False
+        return flag
 
     def make_data_base(self):
         """
@@ -53,19 +67,36 @@ class Driller:
         :param data:
         :return:
         """
-        with sq.connect('word_data.db') as con:
-            cur = con.cursor()
-            cur.execute(f"""INSERT INTO words VALUES (
-            '{data.art}', '{data.word}', '{data.translation}'
-            )""")
+        if self.check_if_exists(data.word):
+            with sq.connect('word_data.db') as con:
+                cur = con.cursor()
+                cur.execute(f"""INSERT INTO words VALUES (
+                '{data.art}', '{data.word}', '{data.translation}'
+                )""")
 
     def get_random_data(self):
         """
         функція для отримання рандомних даних із бази
         :return:
         """
-        pass
+        with sq.connect('word_data.db') as con:
+            cur = con.cursor()
+            cur.execute("""SELECT * FROM words""")
+            result = cur.fetchall()
+            self.__random_data = choice(result)
+
+
 
 
 if __name__ == '__main__':
-    w = Driller()
+    d = Driller()
+    w = Wort('Uhr', 'годинник', 'die')
+    w2 = Wort('betreten', 'входити')
+    w3 = Wort('verlassen', 'покидати')
+    w4 = Wort('Regel','правило','die')
+    d.add_data(w)
+    d.add_data(w2)
+    d(w3)
+    d(w4)
+    d.get_random_data()
+    print(d.show_random())
